@@ -1,0 +1,127 @@
+Now then.
+I appreciate,
+I am probably killing you with the theory by now.
+But I mean it.
+I really want you to understand Kubernetes networking.
+Cause when thing stop working,
+and the brown stuff hits the fan.
+You really need to have your, uh,
+stuff together.
+Yeah.
+You really need to have your stuff together.
+Anyway, look.
+Last bit of theory, right?
+When you create you create your service it gets this,
+unique, long lived IP.
+Cool, we know that.
+But I don't know if you noticed,
+that IP's actually not on any network that you recognize.
+So it's not on the Node Network,
+and its not on the Pod Network.
+It's actually on this third network that we call
+the Service Network.
+Only you know what?
+(laughs)
+You're going to love this.
+It's not really an actual network.
+Maybe calling it a Netw might be more appropriate.
+Cause no matter how much digging you do with
+your normal networking tools,
+you are not gonna find any interfaces on it.
+You know what?
+There's no roots to it either.
+So?
+You'd be right to ask,
+well how the heck does traffic even get to it then?
+Ah ha!
+It goes like this.
+Every node on the network
+has this process running called kube-proxy.
+Actually, it's running on the cluster as a demon set.
+So you get one kube-proxy pod on every node.
+Anyway,
+one of it's main jobs is to write a bunch of IPVS, or
+IPTables rules on each node,
+that basically say,
+any requests that you see addressed to this service network,
+rewrite the headers and send them to the appropriate pods
+on the pod network.
+And then, obviously,
+there's roots and stuff to the pod network.
+So, let's step back a second, right?
+A flow might look like this,
+we've got some nodes here with these IPs,
+and we've got this pod network.
+This is a service, and look,
+the IP is not on the pod network or the nod network.
+Anyway,
+the pod sends traffic to the service.
+DNS does its magic, right,
+and it spits out the service IP.
+So, the pod then sends packets to its
+Virtual Ethernet Interface which has abso-freaking-lutely,
+no idea about the service network so,
+normal networking etiquette applies, and the interface
+sends the packets to its default gateway.
+This happens to be a Linux bridge called CBR0.
+Now if you know your DOCR actually,
+it's the equivalent of DOCR0.
+But Kubernetes names it CBR0 for Custom Bridge Zero.
+Anyway, it's a dumb bridge,
+so it sends the packets up stream again.
+This time, to the nodes, ETH0 interface.
+Now then, to get there,
+the packets get processed by the kernel on the host.
+And when this happens,
+the kernel says,
+hang on a second,
+I've got some IPVS or IPTables Rules
+for stuff with this address.
+And it applies a rule,
+which pretty much says something along the lines of
+anytime you see a packet for this address,
+rewrite the destination address to this on the pod network,
+and send it on.
+And that's effectively it.
+Now, we don't want to get into the weeds too much.
+But there's a few ways to actually implement all of this.
+And since Kubernetes 1.2,
+running kube-proxy in IPTables mode has been the default.
+And it's fine and all good, at least,
+until you get to proper scale.
+You see,
+at its core,
+IPTables is a packet filtering technology for Firewalling.
+And in Kubernetes,
+we're kind of shoe-horning it into being
+more of a load balancer.
+And it just doesn't scale at that.
+So,
+there's a new mode that we call IPVS mode.
+And as the name suggests,
+it uses the native IPVS in the Linux kernel.
+Which to be honest,
+has always been intended to be more of a load balancer,
+anyway.
+So it scales better than IPTables at this.
+Like,
+it uses hashes and the likes to be
+faster and more scalable.
+Plus,
+you know what,
+it supports a load more load-balancing algorithms.
+So,
+in IPVS mode, round robin's the default,
+but under the hood,
+it can also do least connection, source hashing,
+destination hashing, shortest expected delay, and more.
+Anyway, look.
+Kube-proxy in IPVS mode has been stable since
+Kubernetes 1.11, and its gonna be the default going forward.
+But we're getting into the weeds here, right?
+For all intensive purposes,
+what we've shown ya, is how it works.
+And that ladies, gents, and Cloud Gurus,
+is the end of the networking theory.
+Wa hey!
+Okay, time for a quick demo before we do a summary.
