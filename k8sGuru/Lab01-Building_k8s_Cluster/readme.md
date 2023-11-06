@@ -59,3 +59,6 @@ $ vagrant up
 ```yaml
 $ vagrant ssh docker
 ```
+
+
+https://github.com/ACloudGuru-Resources/Course_Kubernetes_Deep_Dive_NP.git

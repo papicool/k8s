@@ -79,4 +79,3 @@ By default the service type is `ClusterIP`
 
 
 ![microservices app](../images/Screenshot%202023-10-30%20at%2022.05.47.png)
-
