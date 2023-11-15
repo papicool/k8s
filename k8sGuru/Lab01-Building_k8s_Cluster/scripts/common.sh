@@ -55,8 +55,9 @@ EOF
 curl -L https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable:/cri-o:/$VERSION/$OS/Release.key | sudo apt-key --keyring /etc/apt/trusted.gpg.d/libcontainers.gpg add -
 curl -L https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/$OS/Release.key | sudo apt-key --keyring /etc/apt/trusted.gpg.d/libcontainers.gpg add -
 
-sudo apt-get update
-sudo apt-get install cri-o cri-o-runc -y
+sudo apt-get clean 
+sudo apt-get update --fix-missing
+sudo apt-get install cri-o cri-o-runc -y 
 
 cat >> /etc/default/crio << EOF
 ${ENVIRONMENT}
@@ -66,7 +67,7 @@ sudo systemctl enable crio --now
 
 echo "CRI runtime installed successfully"
 
-sudo apt-get update
+sudo apt-get update 
 sudo apt-get install -y apt-transport-https ca-certificates curl
 curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-archive-keyring.gpg
 
