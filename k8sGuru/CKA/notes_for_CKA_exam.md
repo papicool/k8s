@@ -125,3 +125,10 @@ kubectl create role pod-reader --verb=get,list,watch --resource=pods,pods/logs -
 ```sh
  kubectl create rolebinding pod-reader --role=pod-reader --user=dev --dry-run=client -o yaml > pod-readerBinding.yml
 ```
+
+## Troubleshooting 
+
+to show all events coming on our cluster
+```sh 
+kubectl get events --sort-by=.metadata.creationTimestamp
+```
