@@ -1,6 +1,6 @@
 # Services
-a Service is like a Load Balancer or Proxy, it route traffic to Pods
-endpoints: are the backend entities to which services route traffic 
+- a Service is like a Load Balancer or Proxy, it route traffic to Pods
+- endpoints: are the backend entities to which services route traffic 
 
 ## Using k8s services
 ### Service Types
