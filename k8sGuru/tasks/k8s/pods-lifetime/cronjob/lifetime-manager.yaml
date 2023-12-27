@@ -1,0 +1,44 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  creationTimestamp: null
+  name: lifetime-manager
+spec:
+  jobTemplate:
+    metadata:
+      creationTimestamp: null
+      name: lifetime-manager
+    spec:
+      template:
+        metadata:
+          creationTimestamp: null
+        spec:
+          serviceAccountName: sa-lifetime
+          containers:
+          - image: bitnami/kubectl
+            name: lifetime-manager
+            command: ['/bin/sh','-c']
+            args: ['chmod u+x /opt/lifetime/lifetime-script.sh; ./opt/lifetime/lifetime-script.sh']
+            volumeMounts:
+            - name: script-vol
+              mountPath: /opt/lifetime
+            resources: {}
+          restartPolicy: OnFailure
+          volumes:
+          - name: script-vol
+            configMap:
+              defaultMode: 0777
+              name: lifetime-configmap
+  schedule: '* * * * *'
+status: {}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: lifetime-configmap
+data:
+  lifetime-script.sh: |
+    #!/bin/bash
+    kubectl rollout restart deploy deploy-pod
+    echo "Restart deploymenent Done"

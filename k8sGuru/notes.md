@@ -1,4 +1,4 @@
-a `k8s cluster` is a collection of worker machines running containers
+A `k8s cluster` is a collection of worker machines running containers
 `control plane`:
 `worker node`
 `kubeadm` is a tool that help setting up our k8s cluster

@@ -50,3 +50,13 @@ EOF
 # Install Metrics Server
 
 kubectl apply -f https://raw.githubusercontent.com/techiescamp/kubeadm-scripts/main/manifests/metrics-server.yaml
+
+
+## INSTALL Helm
+cd /tmp
+curl -fsSL -o helm.tar.gz https://get.helm.sh/helm-v3.4.1-linux-amd64.tar.gz
+tar -xzf helm.tar.gz
+sudo cp ./linux-amd64/helm /usr/local/bin
+helm version
+helm repo add stable https://charts.helm.sh/stable
+helm repo update
